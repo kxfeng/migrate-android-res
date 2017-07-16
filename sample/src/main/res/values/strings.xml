@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Sample</string>
+    <string name="setting">Setting</string>
+    <string name="setting_en_zh">Setting EN</string>
+</resources>
