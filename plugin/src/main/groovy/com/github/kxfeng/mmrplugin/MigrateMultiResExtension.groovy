@@ -18,7 +18,7 @@ class MigrateMultiResExtension {
 class MigrateMultiResSubTaskExtension {
     String name
     String from
-    List<String> into
+    List<String> to
 
     MigrateMultiResSubTaskExtension(String name) {
         this.name = name
@@ -28,12 +28,12 @@ class MigrateMultiResSubTaskExtension {
         this.from = from
     }
 
-    void into(String[] into) {
-        this.into = into
+    void to(String[] to) {
+        this.to = to
     }
 
     @Override
     String toString() {
-        return "name=${name} from=${from} into=${into}"
+        return "name=${name} from=${from} to=${to}"
     }
 }

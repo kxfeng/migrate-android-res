@@ -14,7 +14,12 @@ apply plugin: 'com.github.kxfeng.mmrplugin'
 migrateMultiRes {
     layout_zh_task {
         from "layout-zh"
-        into "layout-zh-rCN", "layout-zh-rTW"
+        to "layout-zh-rCN", "layout-zh-rTW"
+    }
+
+    values_zh_task {
+        from "values-zh"
+        to "values-zh-rCN", "values-zh-rTW"
     }
 }
 
