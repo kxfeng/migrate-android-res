@@ -28,11 +28,7 @@ class MigrateMultiResPlugin implements Plugin<Project> {
                     doLast {
                         project.extensions.migrateMultiRes.subTasks.each { subTask ->
 
-                            println "${migrateTaskName} SubTask: ${subTask.name}"
-
-                            new File("${resDir}/${subTask.from}").eachFileRecurse(FileType.FILES) { file ->
-                                println "from:${subTask.from}/${file.name} to:${subTask.to}"
-                            }
+                            project.logger.info("subTask: ${subTask.name}")
 
                             switch (subTask.from) {
                                 case VALUES_PATTERN:
@@ -54,6 +50,21 @@ class MigrateMultiResPlugin implements Plugin<Project> {
     }
 
     static void copyTask(project, resDir, subTask) {
+        def srcFolder = new File("${resDir}/${subTask.from}")
+
+        if (!srcFolder.exists()) {
+            project.logger.warn("not exist:${srcFolder.getCanonicalPath()}")
+            return
+        }
+
+        if (!srcFolder.isDirectory()) {
+            throw new GradleException("not directory:${srcFolder.getCanonicalPath()}")
+        }
+
+        srcFolder.eachFileRecurse(FileType.FILES) { file ->
+            project.logger.info("from:${subTask.from}/${file.name} to:${subTask.to}")
+        }
+
         subTask.to.each { dest ->
             project.copy {
                 from "${resDir}/${subTask.from}"
@@ -64,12 +75,38 @@ class MigrateMultiResPlugin implements Plugin<Project> {
     }
 
     static void mergeTask(project, resDir, subTask) {
+        def srcFile = new File("${resDir}/${subTask.from}/${subTask.from}.xml")
+
+        if (!srcFile.exists()) {
+            project.logger.warn("not exist:${srcFile.getCanonicalPath()}")
+            return
+        }
+
+        if (!srcFile.isFile()) {
+            throw new GradleException("not file:${srcFile.getCanonicalPath()}")
+        }
+
         def srcXml = new XmlParser().parse("${resDir}/${subTask.from}/${subTask.from}.xml")
 
         subTask.to.each { dest ->
-            def toPath = "${resDir}/${dest}/${dest}.xml"
+            def toFile = new File("${resDir}/${dest}/${dest}.xml")
 
-            def toXml = new XmlParser().parse(toPath)
+            project.logger.info("from:${subTask.from}/${subTask.from}.xml to:${dest}/${dest}.xml")
+
+            if (!toFile.exists()) {
+                project.copy {
+                    from "${resDir}/${subTask.from}/${subTask.from}.xml"
+                    into "${resDir}/${dest}"
+                    rename "${subTask.from}.xml", "${dest}.xml"
+                }
+                return
+            }
+
+            if (!toFile.isFile()) {
+                throw new GradleException("not file:${toFile.getCanonicalPath()}")
+            }
+
+            def toXml = new XmlParser().parse(toFile)
 
             srcXml.children().each { child ->
                 def findName = toXml.findAll { it.attribute("name") == child.attribute("name") }
@@ -82,7 +119,7 @@ class MigrateMultiResPlugin implements Plugin<Project> {
 
             toXml.children().sort { it.attribute('name') }
 
-            new File(toPath).withWriter('UTF-8') { outWriter ->
+            toFile.withWriter('UTF-8') { outWriter ->
                 XmlUtil.serialize(toXml, outWriter)
             }
         }
