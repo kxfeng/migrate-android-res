@@ -1,4 +1,4 @@
-package com.github.kxfeng.mmrplugin
+package com.github.kxfeng.migrateres
 
 import groovy.io.FileType
 import groovy.xml.XmlUtil
@@ -8,25 +8,26 @@ import org.gradle.api.Project
 
 import java.util.regex.Pattern
 
-class MigrateMultiResPlugin implements Plugin<Project> {
+class MigrateResPlugin implements Plugin<Project> {
 
     Pattern VALUES_PATTERN = ~/values\S*/
+    String EXT_CONFIG_NAME = "migrateAndroidRes"
 
     @Override
     void apply(Project project) {
 
-        project.extensions.create('migrateMultiRes', MigrateMultiResExtension)
+        project.extensions.create(EXT_CONFIG_NAME, MigrateResExtension)
 
         project.afterEvaluate {
 
             project.android.applicationVariants.each { variant ->
                 def resDir = "${project.buildDir}/intermediates/res/merged/${variant.dirName}"
 
-                def migrateTaskName = "migrate${variant.name.capitalize()}MultiResource"
+                def migrateTaskName = "migrate${variant.name.capitalize()}Resource"
 
                 project.task("${migrateTaskName}") {
                     doLast {
-                        project.extensions.migrateMultiRes.subTasks.each { subTask ->
+                        project.extensions["${EXT_CONFIG_NAME}"].subTasks.each { subTask ->
 
                             project.logger.info("subTask: ${subTask.name}")
 

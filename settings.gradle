@@ -1,1 +1,2 @@
-include ':sample', ':plugin'
+include ':plugin'
+//include ':sample'

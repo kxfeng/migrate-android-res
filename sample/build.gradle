@@ -1,17 +1,18 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://jitpack.io' }
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.kxfeng:mmrplugin:1.0'
+        classpath 'com.github.kxfeng:migrate-android-res:1.0'
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.kxfeng.mmrplugin'
+apply plugin: 'com.github.kxfeng.migrate-android-res'
 
-migrateMultiRes {
+migrateAndroidRes {
     layout_zh_task {
         from "layout-zh"
         to "layout-zh-rCN", "layout-zh-rTW"
@@ -33,6 +34,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resConfigs "zh", "zh-rCN", "zh-rTW", "zh-rHK", "zh-rMO", "zh-rSG"
     }
     buildTypes {
         debug {

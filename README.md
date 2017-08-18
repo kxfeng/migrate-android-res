@@ -1,4 +1,4 @@
-# MigrateMultiResPlugin
+# migrate-android-res
 A gradle plugin to migrate Android resources at build time
 
 From Android 7.0, the strategy of resolving language resources has changed ([document](https://developer.android.com/guide/topics/resources/multilingual-support.html)). But for Chinese resources, the strategy is not as described as the document. For Android 7.0+, there are two seperated language define:  
@@ -39,13 +39,13 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.kxfeng:mmrplugin:1.0'
+        classpath 'com.github.kxfeng:migrate-android-res:1.0'
     }
 }
-apply plugin: 'com.github.kxfeng.mmrplugin'
+apply plugin: 'com.github.kxfeng.migrate-android-res'
 
 // define migrate tasks
-migrateMultiRes {
+migrateAndroidRes {
     // task name (any name you like) 
     layout_zh_task {
         from "layout-zh"                     // one source folder 
