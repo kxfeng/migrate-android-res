@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MigrateAndroidRes.iml" filepath="$PROJECT_DIR$/.idea/modules/MigrateAndroidRes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/migrate-android-res.iml" filepath="$PROJECT_DIR$/.idea/modules/migrate-android-res.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/plugin/plugin.iml" filepath="$PROJECT_DIR$/.idea/modules/plugin/plugin.iml" />
     </modules>
   </component>

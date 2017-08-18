@@ -36,7 +36,7 @@ This plugin can used to migrate any Android resource based on qualifier, not jus
 ```groovy
 buildscript {
     repositories {
-        mavenLocal()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath 'com.github.kxfeng:migrate-android-res:1.0'
