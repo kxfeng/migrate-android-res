@@ -64,3 +64,20 @@ However, when you build an app, there maybe some resources which are same for bo
 This plugin is writen to resolve problem above. You can just put resources which are same for Hans and Hant in zh folder, such as values-zh, layout_zh, drawable-xhdpi-zh, when build the project, the plugin can help you migrate resources from zh to zh-CN and zh-TW. There will be no zh folder in the final apk, instead two copies of resources are in zh-CN and zh-TW folders separately. 
 
 This plugin can used to migrate any Android resource based on qualifier, not just chinese language qualifier.
+
+License
+-------
+
+    Copyright 2017 kxfeng
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
