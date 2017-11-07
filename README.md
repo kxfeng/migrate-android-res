@@ -31,7 +31,9 @@ migrateAndroidRes {
 ### Compatibility
 
 - Gradle 2.3 (Android Studio 2.3) : OK
-- Gradle 3.0 (Android Studio 3.0) : Work only when AAPT2 is disabled. You can disable AAPT2 by setting `android.enableAapt2=false` in your gradle.properties file and restarting the Gradle daemon by running `./gradlew --stop` from the command line.
+- Gradle 3.0 (Android Studio 3.0) : Works only when AAPT2 is disabled. 
+
+You can disable AAPT2 by setting `android.enableAapt2=false` in your gradle.properties file and restarting the Gradle daemon by running `./gradlew --stop` from the command line.
 
 ## Description 
 From Android 7.0, the strategy of resolving language resources has changed ([document](https://developer.android.com/guide/topics/resources/multilingual-support.html)). But for Chinese resources, the strategy is not as described as the document. For Android 7.0+, there are two seperated language define:  
