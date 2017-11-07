@@ -1,6 +1,39 @@
 # migrate-android-res
 A gradle plugin to migrate Android resources at build time
 
+## Usage 
+```groovy
+buildscript {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath 'com.github.kxfeng:migrate-android-res:1.0'
+    }
+}
+apply plugin: 'com.github.kxfeng.migrate-android-res'
+
+// define migrate tasks
+migrateAndroidRes {
+    // task name (any name you like) 
+    layout_zh_task {
+        from "layout-zh"                     // one source folder 
+        to "layout-zh-rCN", "layout-zh-rTW"  // multiple destination folders
+    }
+
+    values_zh_task {
+        from "values-zh"
+        to "values-zh-rCN", "values-zh-rTW"
+    }
+}
+```
+
+### Compatibility
+
+- Gradle 2.3 (Android Studio 2.3) : OK
+- Gradle 3.0 (Android Studio 3.0) : Work only when AAPT2 is disabled. You can disable AAPT2 by setting `android.enableAapt2=false` in your gradle.properties file and restarting the Gradle daemon by running `./gradlew --stop` from the command line.
+
+## Description 
 From Android 7.0, the strategy of resolving language resources has changed ([document](https://developer.android.com/guide/topics/resources/multilingual-support.html)). But for Chinese resources, the strategy is not as described as the document. For Android 7.0+, there are two seperated language define:  
 
 | Language | Resource qualifier |
@@ -31,31 +64,3 @@ However, when you build an app, there maybe some resources which are same for bo
 This plugin is writen to resolve problem above. You can just put resources which are same for Hans and Hant in zh folder, such as values-zh, layout_zh, drawable-xhdpi-zh, when build the project, the plugin can help you migrate resources from zh to zh-CN and zh-TW. There will be no zh folder in the final apk, instead two copies of resources are in zh-CN and zh-TW folders separately. 
 
 This plugin can used to migrate any Android resource based on qualifier, not just chinese language qualifier.
-
-## Usage 
-```groovy
-buildscript {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-    dependencies {
-        classpath 'com.github.kxfeng:migrate-android-res:1.0'
-    }
-}
-apply plugin: 'com.github.kxfeng.migrate-android-res'
-
-// define migrate tasks
-migrateAndroidRes {
-    // task name (any name you like) 
-    layout_zh_task {
-        from "layout-zh"                     // one source folder 
-        to "layout-zh-rCN", "layout-zh-rTW"  // multiple destination folders
-    }
-
-    values_zh_task {
-        from "values-zh"
-        to "values-zh-rCN", "values-zh-rTW"
-    }
-}
-```
-

@@ -42,10 +42,11 @@ class MigrateResPlugin implements Plugin<Project> {
                     }
                 }
 
-                def processTaskName = "process${variant.name.capitalize()}Resources"
+                def migrateTask = project.tasks[migrateTaskName]
+                def processTask = project.tasks["process${variant.name.capitalize()}Resources"]
 
-                project.tasks[migrateTaskName].dependsOn project.tasks[processTaskName].taskDependencies.getDependencies()
-                project.tasks[processTaskName].dependsOn project.tasks[migrateTaskName]
+                migrateTask.dependsOn processTask.taskDependencies.getDependencies()
+                processTask.dependsOn migrateTask
             }
         }
     }

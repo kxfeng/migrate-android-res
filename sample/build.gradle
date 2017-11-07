@@ -26,7 +26,7 @@ migrateAndroidRes {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.github.kxfeng.sample"
         minSdkVersion 14
@@ -46,10 +46,21 @@ android {
         }
     }
 
+    flavorDimensions "market", "minApi"
+
     productFlavors {
-        flavor1 {
+        googlePlay {
+            dimension "market"
         }
-        flavor2 {
+        otherMarket {
+            dimension "market"
+        }
+
+        minApi19 {
+            dimension "minApi"
+        }
+        minApi23 {
+            dimension "minApi"
         }
     }
 }
