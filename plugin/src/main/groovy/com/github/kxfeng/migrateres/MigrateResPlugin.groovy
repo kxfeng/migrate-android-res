@@ -21,7 +21,6 @@ class MigrateResPlugin implements Plugin<Project> {
         project.afterEvaluate {
 
             project.android.applicationVariants.each { variant ->
-                def resDir = "${project.buildDir}/intermediates/res/merged/${variant.dirName}"
 
                 def migrateTaskName = "migrate${variant.name.capitalize()}Resource"
 
@@ -29,24 +28,31 @@ class MigrateResPlugin implements Plugin<Project> {
                     doLast {
                         project.extensions["${EXT_CONFIG_NAME}"].subTasks.each { subTask ->
 
-                            project.logger.info("subTask: ${subTask.name}")
+                            if (!project.extensions["${EXT_CONFIG_NAME}"].enable) {
+                                project.logger.info("migrateTask: migrate is disabled")
+                                return
+                            }
 
-                            switch (subTask.from) {
-                                case VALUES_PATTERN:
-                                    mergeTask(project, resDir, subTask)
-                                    break
-                                default:
-                                    copyTask(project, resDir, subTask)
+                            project.logger.info("migrateTask: subTask ${subTask.name}")
+
+                            project.android.sourceSets.each { sourceSet ->
+                                sourceSet.res.srcDirs.each { resDir ->
+                                    switch (subTask.from) {
+                                        case VALUES_PATTERN:
+                                            mergeTask(project, resDir, subTask)
+                                            break
+                                        default:
+                                            copyTask(project, resDir, subTask)
+                                            break
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
-                def migrateTask = project.tasks[migrateTaskName]
-                def processTask = project.tasks["process${variant.name.capitalize()}Resources"]
-
-                migrateTask.dependsOn processTask.taskDependencies.getDependencies()
-                processTask.dependsOn migrateTask
+                project.tasks[migrateTaskName].dependsOn project.tasks["preBuild"].taskDependencies.getDependencies()
+                project.tasks["preBuild"].dependsOn project.tasks[migrateTaskName]
             }
         }
     }
@@ -55,16 +61,16 @@ class MigrateResPlugin implements Plugin<Project> {
         def srcFolder = new File("${resDir}/${subTask.from}")
 
         if (!srcFolder.exists()) {
-            project.logger.warn("not exist:${srcFolder.getCanonicalPath()}")
+            project.logger.warn("migrateTask: ${srcFolder.canonicalPath} not exist")
             return
         }
 
         if (!srcFolder.isDirectory()) {
-            throw new GradleException("not directory:${srcFolder.getCanonicalPath()}")
+            throw new GradleException("migrateTask: ${srcFolder.canonicalPath} is not directory")
         }
 
         srcFolder.eachFileRecurse(FileType.FILES) { file ->
-            project.logger.info("from:${subTask.from}/${file.name} to:${subTask.to}")
+            project.logger.info("migrateTask: from:${subTask.from}/${file.name} to:${subTask.to}")
         }
 
         subTask.to.each { dest ->
@@ -77,52 +83,63 @@ class MigrateResPlugin implements Plugin<Project> {
     }
 
     static void mergeTask(project, resDir, subTask) {
-        def srcFile = new File("${resDir}/${subTask.from}/${subTask.from}.xml")
+        def srcFolder = new File("${resDir}/${subTask.from}")
 
-        if (!srcFile.exists()) {
-            project.logger.warn("not exist:${srcFile.getCanonicalPath()}")
+        if (!srcFolder.exists()) {
+            project.logger.info("migrateTask: ${srcFolder.canonicalPath} not exist")
             return
         }
 
-        if (!srcFile.isFile()) {
-            throw new GradleException("not file:${srcFile.getCanonicalPath()}")
+        if (!srcFolder.isDirectory()) {
+            throw new GradleException("migrateTask: ${srcFolder.canonicalPath} is not directory")
         }
 
-        def srcXml = new XmlParser().parse("${resDir}/${subTask.from}/${subTask.from}.xml")
+        srcFolder.listFiles().each { srcFile ->
 
-        subTask.to.each { dest ->
-            def toFile = new File("${resDir}/${dest}/${dest}.xml")
-
-            project.logger.info("from:${subTask.from}/${subTask.from}.xml to:${dest}/${dest}.xml")
-
-            if (!toFile.exists()) {
-                project.copy {
-                    from "${resDir}/${subTask.from}/${subTask.from}.xml"
-                    into "${resDir}/${dest}"
-                    rename "${subTask.from}.xml", "${dest}.xml"
-                }
+            if (!srcFile.exists()) {
+                project.logger.warn("migrateTask: ${srcFile.canonicalPath} not exist")
                 return
             }
 
-            if (!toFile.isFile()) {
-                throw new GradleException("not file:${toFile.getCanonicalPath()}")
+            if (!srcFile.isFile()) {
+                throw new GradleException("migrateTask: ${srcFile.canonicalPath} is not file")
             }
 
-            def toXml = new XmlParser().parse(toFile)
+            def srcXml = new XmlParser().parse(srcFile)
 
-            srcXml.children().each { child ->
-                def findName = toXml.findAll { it.attribute("name") == child.attribute("name") }
+            subTask.to.each { dest ->
+                def toFile = new File("${resDir}/${dest}/${srcFile.name}")
 
-                if (findName.size() > 0)
-                    throw new GradleException("${child.attribute('name')} already exist in ${dest}.xml")
+                project.logger.info("migrateTask: from:${srcFile.canonicalPath} to:${toFile.canonicalPath}")
 
-                toXml.append(child)
-            }
+                if (!toFile.exists()) {
+                    project.copy {
+                        from "${srcFile.absolutePath}"
+                        into "${resDir}/${dest}"
+                    }
+                    return
+                }
 
-            toXml.children().sort { it.attribute('name') }
+                if (!toFile.isFile()) {
+                    throw new GradleException("migrateTask: ${toFile.canonicalPath} is not file")
+                }
 
-            toFile.withWriter('UTF-8') { outWriter ->
-                XmlUtil.serialize(toXml, outWriter)
+                def toXml = new XmlParser().parse(toFile)
+
+                srcXml.children().each { child ->
+                    def findName = toXml.findAll { it.attribute("name") == child.attribute("name") }
+
+                    if (findName.size() > 0)
+                        throw new GradleException("migrateTask: ${child.attribute('name')} already exist in ${toFile.canonicalPath}")
+
+                    toXml.append(child)
+                }
+
+                toXml.children().sort { it.attribute('name') }
+
+                toFile.withWriter('UTF-8') { outWriter ->
+                    XmlUtil.serialize(toXml, outWriter)
+                }
             }
         }
 

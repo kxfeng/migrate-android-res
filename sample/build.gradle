@@ -5,7 +5,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.kxfeng:migrate-android-res:1.0'
+        classpath 'com.github.kxfeng:migrate-android-res:1.1'
     }
 }
 
@@ -13,6 +13,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.github.kxfeng.migrate-android-res'
 
 migrateAndroidRes {
+    enable = true
+
     layout_zh_task {
         from "layout-zh"
         to "layout-zh-rCN", "layout-zh-rTW"
