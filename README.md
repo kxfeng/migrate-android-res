@@ -8,13 +8,17 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.github.kxfeng:migrate-android-res:1.0'
+        classpath 'com.github.kxfeng:migrate-android-res:1.1'
     }
 }
 apply plugin: 'com.github.kxfeng.migrate-android-res'
 
 // define migrate tasks
 migrateAndroidRes {
+    // this plugin will make some changes (modify and delete files) to your working directory, so you'd
+    // better enable this after you have saved your working files.
+    enable = true
+
     // task name (any name you like) 
     layout_zh_task {
         from "layout-zh"                     // one source folder 
