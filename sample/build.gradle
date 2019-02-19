@@ -1,11 +1,10 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url 'https://jitpack.io' }
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.kxfeng:migrate-android-res:1.1'
+        classpath 'com.github.kxfeng:migrate-android-res:1.1.1'
     }
 }
 

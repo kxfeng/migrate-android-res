@@ -1,17 +1,40 @@
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 dependencies {
     compile gradleApi()
 }
 
+task sourceJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+    classifier "sources"
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        MyPublication(MavenPublication) {
+            from components.java
             groupId = "com.github.kxfeng"
             artifactId 'migrate-android-res'
-            version = "1.1"
-            from components.java
+            version = "1.1.1"
+            artifact sourceJar
         }
     }
+}
+
+bintray {
+    user = findProperty('BINTRAY_USER')
+    key = findProperty('BINTRAY_KEY')
+    pkg {
+        repo = 'maven'
+        name = 'migrate-android-res'
+        version {
+            name = '1.1.1'
+            desc = '1.1.1 release'
+            released  = new Date()
+            vcsTag = '1.1.1'
+        }
+    }
+    publications = ['MyPublication']
 }

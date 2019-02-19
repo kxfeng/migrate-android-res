@@ -5,15 +5,14 @@ A gradle plugin to migrate Android resources at build time
 ```groovy
 buildscript {
     repositories {
-        maven { url 'https://jitpack.io' }
+        jcenter()
     }
     dependencies {
-        classpath 'com.github.kxfeng:migrate-android-res:1.1'
+        classpath 'com.github.kxfeng:migrate-android-res:1.1.1'
     }
 }
 apply plugin: 'com.github.kxfeng.migrate-android-res'
 
-// define migrate tasks
 migrateAndroidRes {
     // this plugin will make some changes (modify and delete files) to your working directory, so you'd
     // better enable this after you have saved your working files.
@@ -67,7 +66,7 @@ This plugin can used to migrate any Android resource based on qualifier, not jus
 License
 -------
 
-    Copyright 2017 kxfeng
+    Copyright 2019 kxfeng
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
